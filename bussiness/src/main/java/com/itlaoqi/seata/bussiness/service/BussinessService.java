@@ -28,11 +28,16 @@ public class BussinessService {
      * @param amount
      * @return
      */
-    @GlobalTransactional(name = "fsp_sale",timeoutMills = 300000,rollbackFor = Exception.class)
-    public Order sale(String goodsCode , Integer quantity ,String username ,Integer points, Float amount ){
+    @GlobalTransactional(name = "fsp_sale",timeoutMills = 10000,rollbackFor = Exception.class)
+    public Order sale(String goodsCode , Integer quantity ,String username ,Integer points, Float amount )  {
         pointsServiceClient.increase(username, points);
         storageServiceClient.decrease(goodsCode, quantity);
         Order order = orderServiceClient.create(goodsCode, quantity, username, points, amount);
+        try {
+            Thread.sleep(200000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         return order;
     }
 }
